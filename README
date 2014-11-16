@@ -1,2 +1,10 @@
-This depends on require.js. Put it in the lib folder.
+What is this project?
+This is a collection of code for creating procedurally generated images. The end goal is to produce environment details like trees and rocks, but for now I'm starting with simpler, more abstract shapes.
+
+Dependencies
+/lib/require.js
+This depends on require.js. Put it a lib folder in the root of the project.
+
+Misc Notes.
+This is a collection of personal work. Things in the OLD folder are old code. Scheduled for either deletion or to be organized and dealt with later.
 
