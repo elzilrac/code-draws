@@ -107,3 +107,4 @@ function coinflip(){
 function rolldie(sides){
   if (Math.random() < (1.0/sides)) {return true;} else {return false;}
 }
+

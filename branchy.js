@@ -20,8 +20,8 @@ function randline(nsteps, x, y, cx, branchno) {
     cx.quadraticCurveTo(points.x1, points.y1, points.x2, points.y2);
     cx.quadraticCurveTo(points.x3, points.y3, points.x4, points.y4);
 
-    if (rolldie(5*branchno)) { // the more branches the less likely to branch
-       return randline(20, x, y, cx);
+    if (rolldie(3*branchno)) { // the more branches the less likely to branch
+       return randline(20, x, y, cx, branchno);
     }
 
     if (nsteps > 0) {
@@ -30,8 +30,7 @@ function randline(nsteps, x, y, cx, branchno) {
     return {x: points.x4, y:points.y4};
 }
 
-function randlinerunner(){
-  var cx = document.querySelector("canvas").getContext("2d");
+function randlinerunner(cx){
   cx.beginPath();
   var x = Math.random()*250;
   var y = 150;
