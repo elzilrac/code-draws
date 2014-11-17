@@ -25,15 +25,16 @@ define(['./colorlib', './random'], function (colorlib, random) {
         return [points];
     };
 
-    function curverunner(cx, curvelist){
-      for (var i=0; i<curvelist.length ;i++){
-          cx.moveTo(curvelist[i].x, curvelist[i].y);
-          cx.quadraticCurveTo(curvelist[i].x1, curvelist[i].y1, curvelist[i].x2, curvelist[i].y2);
-          cx.quadraticCurveTo(curvelist[i].x3, curvelist[i].y3, curvelist[i].x4, curvelist[i].y4);
-      }
-      var finalpos = curvelist[curvelist.length-1];
-      cx.moveTo(finalpos.x4, finalpos.y4);
-    };
+    function curverunner (cx, curvelist){
+        // Renders an "s" curve (set of points)
+        for (var i=0; i<curvelist.length ;i++){
+            cx.moveTo(curvelist[i].x, curvelist[i].y);
+            cx.quadraticCurveTo(curvelist[i].x1, curvelist[i].y1, curvelist[i].x2, curvelist[i].y2);
+            cx.quadraticCurveTo(curvelist[i].x3, curvelist[i].y3, curvelist[i].x4, curvelist[i].y4);
+        }
+        var finalpos = curvelist[curvelist.length-1];
+        cx.moveTo(finalpos.x4, finalpos.y4);
+    }
 
     return {
         canvasDrawer: function (cx) {

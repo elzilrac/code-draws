@@ -2,11 +2,12 @@
    TODO: handle switching between libraries or loading different ones
    TODO: redraw on user request
 */
-define(['./rainbow'], function (rainbow) {
+define(['./tree', './rainbow'], function (tree, rainbow) {
 
     return {
         render: function (cx) {
-          rainbow.canvasDrawer(cx);
+          tree.canvasDrawer(cx);
+          // rainbow.canvasDrawer(cx);
         },
     };
 });

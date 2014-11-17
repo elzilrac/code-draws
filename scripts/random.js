@@ -9,6 +9,13 @@ define(function () {
           return small + (Math.random()*diff);
         },
 
+        draw: function (arr){
+            // draw a single element from the array
+            var size = arr.length;
+            var idx = Math.floor(Math.random()*size);
+            return arr[idx];
+        },
+
         coinflip: function (){
           if(Math.random() > 0.5) {return true;} else {return false;}
         },

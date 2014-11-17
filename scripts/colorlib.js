@@ -1,5 +1,5 @@
 /* Colorlib
-   Color porcessing library
+   Color processing library
 */
 define(function () {
     return {
