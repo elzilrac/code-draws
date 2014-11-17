@@ -38,8 +38,8 @@ define(['./colorlib', './random'], function (colorlib, random) {
 
     return {
         canvasDrawer: function (cx) {
-          var x = Math.random()*250;
-          var y = 150;
+          var x = Math.random()*cx.canvas.width;
+          var y = cx.canvas.height*.9;
           var nsteps = 20;//sample(10,20);
           var pointlist = randline(nsteps, x, y);
 

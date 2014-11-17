@@ -10,6 +10,10 @@ define(['./colorlib', './random'], function (colorlib, random) {
             xinc *= -1;
         }
         var yinc = random.sample(10, 25);
+        // The increments scale down a bit with branch and steps
+        // var scale = (branch+nsteps)/3;
+        // xinc*= scale;
+        // yinc*= scale;
 
         var points = {
           x: x,
@@ -26,16 +30,25 @@ define(['./colorlib', './random'], function (colorlib, random) {
           step: nsteps,
         };
 
+        function canbranch(branch, steps){
+            // rolls the dice to see if it branches
+            // gets more branchy towards the leaves, but also less likely to branch if you are a leaf
+            var dicevalue = Math.max((2.0/Math.log(steps)), 1) - (branch*0.6);
+            dicevalue = Math.max(dicevalue, 2);
+            return random.rolldie(dicevalue);
+        }
+
 
         if (nsteps > 0) {
-           var res = randline(nsteps-1, points.x4, points.y4, branch, orientation);
-            if (random.rolldie(2 * branch)) { // the more branches the less likely to branch
+            var res = randline(nsteps-1, points.x4, points.y4, branch, orientation);
+            if (canbranch(branch, nsteps)) { // the more branches the less likely to branch
                 // we can actually start the branch from a number of the points, so let's pick one
                 var starting = random.draw([[x, y],[points.x2, points.y2]]);
+                var newsteps = random.sample(nsteps-1, nsteps);
                 res = res.concat(randline(nsteps, starting[0], starting[1], branch +1, !orientation));
             }
-           res.push(points);
-           return res;
+            res.push(points);
+            return res;
         }
         return [points];
     };
@@ -55,19 +68,27 @@ define(['./colorlib', './random'], function (colorlib, random) {
         }
         var finalpos = curvelist[curvelist.length-1];
         cx.moveTo(finalpos.x4, finalpos.y4);
-    }
+    };
+
+    function drawtree(cx, x, y){
+        // Randomly draw a tree at a location
+        var nsteps = Math.floor(random.sample(3,5));
+        var pointlist = randline(nsteps, x, y, 1);
+        cx.strokeStyle = colorlib.colormixer('#4e3b1d', 50, 50, 50);
+        curverunner(cx, pointlist);
+    };
 
     return {
         canvasDrawer: function (cx) {
-          var x = 200;
-          var y = 370;
-          var nsteps = 3;
-          var pointlist = randline(nsteps, x, y, 1);
-          console.log(pointlist);
+            var forestSize = 1;
+            var treeHeight = (cx.canvas.height * .80) * 2; // since we scale smaller, move it down
+            cx.scale(0.5, 0.5);
 
-          cx.strokeStyle = colorlib.colormixer('#4e3b1d', 50, 50, 50);
-          curverunner(cx, pointlist);
-          
+            for (var i=0; i< forestSize; i++){
+                var xpos = random.sample(cx.canvas.width * .10, cx.canvas.width * .90);
+                drawtree(cx, xpos,  treeHeight);
+            }
+
         },
     }
 
