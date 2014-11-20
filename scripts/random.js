@@ -20,6 +20,11 @@ define(function () {
           if(Math.random() > 0.5) {return true;} else {return false;}
         },
 
+        playtheodds: function(odds){
+            // Like roll the dice, but pass in a number between 0 and 1
+            if (Math.random() < (odds)) {return true;} else {return false;}
+        },
+
         rolldie: function (sides){
           if (Math.random() < (1.0/sides)) {return true;} else {return false;}
         },

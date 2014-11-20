@@ -11,9 +11,9 @@ define(['./colorlib', './random'], function (colorlib, random) {
         }
         var yinc = random.sample(10, 25);
         // The increments scale down a bit with branch and steps
-        // var scale = (branch+nsteps)/3;
-        // xinc*= scale;
-        // yinc*= scale;
+        var scale = Math.log(nsteps)*2; //(branch+nsteps)/3;
+        xinc*= scale;
+        yinc*= scale;
 
         var points = {
           x: x,
@@ -30,12 +30,20 @@ define(['./colorlib', './random'], function (colorlib, random) {
           step: nsteps,
         };
 
-        function canbranch(branch, steps){
+        function canbranch(branch, nsteps){
             // rolls the dice to see if it branches
             // gets more branchy towards the leaves, but also less likely to branch if you are a leaf
-            var dicevalue = Math.max((2.0/Math.log(steps)), 1) - (branch*0.6);
-            dicevalue = Math.max(dicevalue, 2);
-            return random.rolldie(dicevalue);
+            //var dicevalue = Math.max((2.0/Math.log(steps)), 1) - (branch*0.6);
+            var oddsvalue = Math.max(Math.min(1.0 - (nsteps*0.1), 0.65), 0.15);
+            return random.playtheodds(oddsvalue);
+        }
+
+        function hasLeaf(branch, nsteps){
+            // rolls the dice to see if we should grow a leaf
+            // note that leaves can grow from the terminus of the branches
+            if (random.rolldie(4/Math.log(nsteps))){
+                ;//;
+            }
         }
 
 
@@ -65,6 +73,16 @@ define(['./colorlib', './random'], function (colorlib, random) {
             cx.lineWidth = Math.min(1+weight, 5);
             cx.stroke();
             cx.closePath();
+
+            // TODO: leaves shouldn't go here...
+            if (random.rolldie(3)){
+                drawLeaf(cx, curvelist[i].x2, curvelist[i].y2, Math.random());
+            }
+            if (random.rolldie(3)){
+                drawLeaf(cx, curvelist[i].x4, curvelist[i].y4, Math.random());
+            }
+            // cx.fillRect(curvelist[i].x2, curvelist[i].y2, 10, 10);
+            // cx.fillRect(curvelist[i].x4, curvelist[i].y4, 10, 10);
         }
         var finalpos = curvelist[curvelist.length-1];
         cx.moveTo(finalpos.x4, finalpos.y4);
@@ -75,7 +93,22 @@ define(['./colorlib', './random'], function (colorlib, random) {
         var nsteps = Math.floor(random.sample(3,5));
         var pointlist = randline(nsteps, x, y, 1);
         cx.strokeStyle = colorlib.colormixer('#4e3b1d', 50, 50, 50);
+        cx.fillStyle = colorlib.colormixer('#4e3b1d', 50, 50, 50);
         curverunner(cx, pointlist);
+    };
+
+    function drawLeaf(cx, x, y, angle){
+        cx.save();
+        cx.beginPath();
+        cx.moveTo(x,y);
+        cx.quadraticCurveTo(x+13,y, x+13, y+13);
+        cx.quadraticCurveTo(x,y+13, x, y);
+        cx.fill(); // TODO: make this fill
+        cx.rotate(Math.pi*angle);
+        cx.moveTo(x,y);
+        cx.stroke();
+        cx.closePath();
+        cx.restore();
     };
 
     return {
