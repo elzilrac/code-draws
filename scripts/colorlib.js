@@ -6,14 +6,43 @@ define(function () {
         colormixer: function (hex, r, g, b) {
             return colormixer(hex, r, g, b);
         },
+        lighten: function (hex, scale){
+          return lighten(hex, scale);
+        }
     };
 });
+
+function lighten(hex, scale){
+  // washes out a color. Adds "scale" (should be 0 to 1)
+
+  var rgb = hexToRgb(hex);
+  var normalized = {
+    r: Math.min(rgb.r + (rgb.r*scale), 254),
+    g: Math.min(rgb.g + (rgb.g*scale), 254),
+    b: Math.min(rgb.b + (rgb.b*scale), 254),
+  }
+
+  return rgbToHex(normalized.r, normalized.g, normalized.b);
+}
 
 function colormixer(hex, r, g, b){
   // pass in 3 values (scale of 0 to 1) for each R, G, B
   // you want each color to get mixed up. Holds proportional.
   var rgb = hexToRgb(hex);
-  return rgbToHex(Math.random()*r+rgb.r, Math.random()*g+rgb.g, Math.random()*b+rgb.b);
+  var raw_vector = {
+    r:  Math.random()*r+rgb.r,
+    g:  Math.random()*g+rgb.g,
+    b:  Math.random()*b+rgb.b};
+
+  var normalized = normalize(raw_vector.r, raw_vector.g, raw_vector.b);
+  var scalar = Math.max(Math.max(rgb.r, rgb.g), rgb.b);
+
+  return rgbToHex(normalized.x*scalar, normalized.y*scalar, normalized.z*scalar);
+}
+
+function normalize(x, y, z){
+  var mag = Math.sqrt((x*x) + (y*y) + (z*z));
+  return {x: x/mag, y: y/mag, z: z/mag};
 }
 
 //These 3 functions below shamelessly stolen from stack overflow because lazy.

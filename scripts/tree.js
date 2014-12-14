@@ -75,10 +75,10 @@ define(['./colorlib', './random'], function (colorlib, random) {
             cx.closePath();
 
             // TODO: leaves shouldn't go here...
-            if (random.rolldie(3)){
+            if (random.rolldie(3) && isFinite(curvelist[i].x2)){
                 drawLeaf(cx, curvelist[i].x2, curvelist[i].y2, Math.random());
             }
-            if (random.rolldie(3)){
+            if (random.rolldie(3) && isFinite(curvelist[i].x4)){
                 drawLeaf(cx, curvelist[i].x4, curvelist[i].y4, Math.random());
             }
             // cx.fillRect(curvelist[i].x2, curvelist[i].y2, 10, 10);
@@ -92,26 +92,39 @@ define(['./colorlib', './random'], function (colorlib, random) {
         // Randomly draw a tree at a location
         var nsteps = Math.floor(random.sample(3,5));
         var pointlist = randline(nsteps, x, y, 1);
-        cx.strokeStyle = colorlib.colormixer('#4e3b1d', 50, 50, 50);
-        cx.fillStyle = colorlib.colormixer('#4e3b1d', 50, 50, 50);
+        cx.strokeStyle = colorlib.colormixer('#776241', 50, 50, 50);
+        cx.fillStyle = colorlib.colormixer('#79674a', 50, 50, 50);
         curverunner(cx, pointlist);
     };
 
     function drawLeaf(cx, x, y, angle){
+        /* Wrapper function to draw a leaf at an angle.
+        */
         cx.save();
+        cx.translate(x,y)
+        cx.rotate(Math.PI*angle);
+        // Since we're resetting the 0,0 to x, y draw the leaf at "0,0"
+        ovalLeaf(cx, 0, 0);
+        cx.restore();
+    };
+
+    function ovalLeaf(cx, x, y){
+        // Draw an oval shaped leaf at x, y
         cx.beginPath();
         cx.moveTo(x,y);
         cx.quadraticCurveTo(x+13,y, x+13, y+13);
         cx.quadraticCurveTo(x,y+13, x, y);
         cx.fill(); // TODO: make this fill
-        cx.rotate(Math.pi*angle);
         cx.moveTo(x,y);
         cx.stroke();
         cx.closePath();
-        cx.restore();
     };
 
     return {
+        drawtree: function (cx, xpos,  treeHeight) {
+            drawtree(cx, xpos,  treeHeight);
+        }, 
+
         canvasDrawer: function (cx) {
             var forestSize = 1;
             var treeHeight = (cx.canvas.height * .80) * 2; // since we scale smaller, move it down
