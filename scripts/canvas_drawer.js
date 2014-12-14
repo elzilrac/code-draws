@@ -2,8 +2,9 @@
     TODO: redraw on user request
 */
 
-define(['./tree', './rainbow'], function (tree, rainbow) {
+define(['./scene' , './tree', './rainbow'], function (scene, tree, rainbow) {
     var available = [
+        {lib:scene, desc:'simple scene', date:'20141214'},
         {lib:tree, desc:'basic tree', date:'20141116'}, 
         {lib:rainbow, desc:'squiggly rainbow', date:'20141115'},
     ];
