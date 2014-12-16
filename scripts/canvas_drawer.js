@@ -17,7 +17,6 @@ define(['./animate', './scene' , './tree', './rainbow'], function (animate, scen
 
     return {
         pageSetup: function () {
-          
           var dd = document.createElement("select");
           dd.name = "ddWhichNamed";
           dd.id = "ddWhichNamed";

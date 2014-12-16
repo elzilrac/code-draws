@@ -1,6 +1,7 @@
 define(['./colorlib', './random', './tree'], function (colorlib, random, tree) {
     return {
         canvasDrawer: function (cx) {
+
             // TODO: ugly global
             STOP_ANIMATE = false;
             // Basic animation bones from 
@@ -36,28 +37,40 @@ define(['./colorlib', './random', './tree'], function (colorlib, random, tree) {
     }
 });
 
-function drawRectangle(myRectangle, context) {
-    context.beginPath();
-    context.rect(myRectangle.x, myRectangle.y, myRectangle.width, myRectangle.height);
-    context.fillStyle = '#8ED6FF';
-    context.fill();
-    context.lineWidth = myRectangle.borderWidth;
-    context.strokeStyle = 'black';
-    context.stroke();
+function draw() {
+    // Buffer for animation
+    var buffer = document.querySelector("buffer").getContext("2d");
+
+    var buffer_context = buffer.getContext('2d');
+    var context = canvas.getContext('2d');
+
+    // Draw ...
+
+    context.drawImage(buffer, 0, 0);
 }
 
-function animate(myRectangle, context, startTime) {
+
+function animate(myRectangle, context, startTime, lastTime) {
     // TODO: ugly global
     if (STOP_ANIMATE){
         return true;
     }
+    var buffer = document.createElement('canvas');
+    buffer.width = context.canvas.width;
+    buffer.height = context.canvas.height;
+
+    var buffer_context = buffer.getContext('2d');
+
     // update
     var time = (new Date()).getTime() - startTime;
+    fps = 1 / ((time-lastTime)/1000);
+    //console.log(fps);
+
     var amplitude = 150;
 
     // in ms
     var period = 2000;
-    var centerX = context.canvas.width / 2 - myRectangle.width / 2;
+    var centerX = buffer_context.canvas.width / 2 - myRectangle.width / 2;
     var nextX = amplitude * Math.sin(time * 2 * Math.PI / period) + centerX;
     myRectangle.x = nextX;
 
@@ -66,23 +79,25 @@ function animate(myRectangle, context, startTime) {
     myRectangle.y = Math.sqrt((radius*radius) + (offsetX*offsetX));
 
     // clear
-    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    context.clearRect(0, 0, buffer_context.canvas.width, buffer_context.canvas.height);
 
     // draw
-    // drawRectangle(myRectangle, context);
 
     // junk draw
-    context.lineWidth = myRectangle.borderWidth;
-    context.beginPath();
-    context.moveTo(centerX, 300);
-    // context.quadraticCurveTo(centerX, context.canvas.height, myRectangle.x, myRectangle.y);
-    context.quadraticCurveTo(myRectangle.x, myRectangle.y, myRectangle.x+5, myRectangle.y-5);
-    context.stroke();
-    context.closePath();
+    buffer_context.lineWidth = myRectangle.borderWidth;
+    buffer_context.beginPath();
+    buffer_context.moveTo(centerX, 300);
+    //buffer_context.lineTo(myRectangle.x, myRectangle.y);
+    buffer_context.quadraticCurveTo(centerX, buffer_context.canvas.height, myRectangle.x, myRectangle.y);
+    buffer_context.quadraticCurveTo(myRectangle.x, myRectangle.y, myRectangle.x+5, myRectangle.y-5);
+    buffer_context.stroke();
+    buffer_context.closePath();
+
+    context.drawImage(buffer, 0, 0);
 
     // request new frame
     requestAnimFrame(function() {
-      animate(myRectangle, context, startTime);
+      animate(myRectangle, context, startTime, time);
     });
 }
 
