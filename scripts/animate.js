@@ -22,8 +22,16 @@ define([], function () {
         startAnimation: function(context){
             context.canvas.setAttribute('animating', 'true');
         },
-        Animator: function(context, animationClass){
-            // the animationFunction must take the context as an argument
+        Animator: function(context, animationFunction){
+            /* Animator: a simple frame buffered animator
+                takes in a canvas context and an animationFunction (does the 
+                drawing)
+                animationFunction's signature must be (context, runtime, kwargs)
+                    context - canvas context to draw to (technically the buffer)
+                    runtime - in milliseconds since doAnimaion first gets called
+                    kwargs - the output of the animationFunction gets passed
+                        back in on subsiquent frame renders (pass forward data)
+            */
             this.runtime = 0;
             this.context = context;
             this.context.canvas.setAttribute('animating', 'true');
@@ -35,7 +43,7 @@ define([], function () {
                 return buffer;
             };
             this.buffer = this.createFrameBuffer();
-            this.doAnimation = function() {bufferedAnimation(this.context, animationClass, this.buffer)};
+            this.doAnimation = function() {bufferedAnimation(this.context, animationFunction, this.buffer)};
 
         },
     }
