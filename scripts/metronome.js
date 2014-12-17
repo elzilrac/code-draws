@@ -12,12 +12,11 @@ define(['./animate',], function (animate) {
 
 
 function metrinomeDrawer(context, runtime, kwargs){
-    kwargs = typeof kwargs !== 'undefined' ? kwargs : {fixedPoint: {x:0, y: 300}, movingPoint: {x:0, y:75} };
+    kwargs = typeof kwargs !== 'undefined' ? kwargs : {fixedPoint: {x:context.canvas.width / 2, y: 300}, movingPoint: {x:context.canvas.width / 2, y:75} };
 
     var amplitude = 150;
     var period = 2000;
     var centerX = context.canvas.width / 2;
-    kwargs.fixedPoint.x = centerX;
     var nextX = amplitude * Math.sin(runtime * 2 * Math.PI / period) + centerX;
     kwargs.movingPoint.x = nextX;
 

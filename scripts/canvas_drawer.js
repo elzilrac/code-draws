@@ -2,8 +2,9 @@
     TODO: redraw on user request
 */
 
-define(['./animate','./metronome', './scene' , './tree', './rainbow'], function (animate, metronome, scene, tree, rainbow) {
+define(['./animate','./physics', './metronome', './scene' , './tree', './rainbow'], function (animate, physics, metronome, scene, tree, rainbow) {
     var available = [
+        {lib:physics, desc:'simple physics', date:'20141217'},
         {lib:metronome, desc:'simple animation', date:'20141215'},
         {lib:scene, desc:'simple scene', date:'20141214'},
         {lib:tree, desc:'basic tree', date:'20141116'}, 
