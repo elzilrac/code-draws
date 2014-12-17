@@ -1,11 +1,7 @@
-define(['./colorlib', './random', './tree'], function (colorlib, random, tree) {
+define([], function () {
     return {
-        canvasDrawer: function (cx) {
-
-            // TODO: ugly global
-            STOP_ANIMATE = false;
-            // Basic animation bones from 
-            // http://www.html5canvastutorials.com/advanced/html5-canvas-linear-motion-animation/
+        setupWindow: function(){
+            // Prep the browser window for animating
             window.requestAnimFrame = (function(callback) {
                 return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
                 function(callback) {
@@ -19,85 +15,61 @@ define(['./colorlib', './random', './tree'], function (colorlib, random, tree) {
                     clearTimeout(id);
                 };
             })();
-
-            var myRectangle = {
-                x: 0,
-                y: 75,
-                width: 100,
-                height: 50,
-                borderWidth: 5
+        },
+        stopAnimation: function(context){
+            context.canvas.setAttribute('animating', 'false');
+        },
+        startAnimation: function(context){
+            context.canvas.setAttribute('animating', 'true');
+        },
+        Animator: function(context, animationClass){
+            // the animationFunction must take the context as an argument
+            this.runtime = 0;
+            this.context = context;
+            this.context.canvas.setAttribute('animating', 'true');
+            //setAttribute() 
+            this.createFrameBuffer = function(){
+                var buffer = document.createElement('canvas');
+                buffer.width = this.context.canvas.width;
+                buffer.height = this.context.canvas.height;
+                return buffer;
             };
+            this.buffer = this.createFrameBuffer();
+            this.doAnimation = function() {bufferedAnimation(this.context, animationClass, this.buffer)};
 
-            // wait one second before starting animation
-            var animTimeoutID = setTimeout(function() {
-                var startTime = (new Date()).getTime();
-                animate(myRectangle, cx, startTime);
-            }, 1000);
         },
     }
 });
 
-function draw() {
-    // Buffer for animation
-    var buffer = document.querySelector("buffer").getContext("2d");
-
-    var buffer_context = buffer.getContext('2d');
-    var context = canvas.getContext('2d');
-
-    // Draw ...
-
-    context.drawImage(buffer, 0, 0);
-}
-
-
-function animate(myRectangle, context, startTime, lastTime) {
-    // TODO: ugly global
-    if (STOP_ANIMATE){
-        return true;
+function bufferedAnimation(context, drawer, buffer, runtime, lastTime, drawerOut){
+    lastTime = typeof lastTime !== 'undefined' ? lastTime : (new Date()).getTime();
+    runtime = typeof runtime !== 'undefined' ? runtime : 0;
+    
+    var is_animating = context.canvas.getAttribute('animating') == 'true';
+    if (!is_animating){
+        return;
     }
-    var buffer = document.createElement('canvas');
-    buffer.width = context.canvas.width;
-    buffer.height = context.canvas.height;
+    // clear the buffer
+    buffer.getContext('2d').clearRect(0, 0, buffer.width, buffer.height);
 
-    var buffer_context = buffer.getContext('2d');
+    // Keep track of elapsed time
+    var time = (new Date()).getTime();
+    runtime += (time - lastTime);
 
-    // update
-    var time = (new Date()).getTime() - startTime;
-    fps = 1 / ((time-lastTime)/1000);
-    //console.log(fps);
+    // do the drawing to the buffer
+    // ...
+    var buffer_ctx = buffer.getContext('2d');
+    drawerOut = drawer(buffer_ctx, time, drawerOut);
 
-    var amplitude = 150;
+    // clear the main canvas
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 
-    // in ms
-    var period = 2000;
-    var centerX = buffer_context.canvas.width / 2 - myRectangle.width / 2;
-    var nextX = amplitude * Math.sin(time * 2 * Math.PI / period) + centerX;
-    myRectangle.x = nextX;
-
-    var radius = 150;
-    var offsetX = nextX - centerX;
-    myRectangle.y = Math.sqrt((radius*radius) + (offsetX*offsetX));
-
-    // clear
-    context.clearRect(0, 0, buffer_context.canvas.width, buffer_context.canvas.height);
-
-    // draw
-
-    // junk draw
-    buffer_context.lineWidth = myRectangle.borderWidth;
-    buffer_context.beginPath();
-    buffer_context.moveTo(centerX, 300);
-    //buffer_context.lineTo(myRectangle.x, myRectangle.y);
-    buffer_context.quadraticCurveTo(centerX, buffer_context.canvas.height, myRectangle.x, myRectangle.y);
-    buffer_context.quadraticCurveTo(myRectangle.x, myRectangle.y, myRectangle.x+5, myRectangle.y-5);
-    buffer_context.stroke();
-    buffer_context.closePath();
-
+    // copy the buffer 
     context.drawImage(buffer, 0, 0);
 
     // request new frame
     requestAnimFrame(function() {
-      animate(myRectangle, context, startTime, time);
+        bufferedAnimation(context, drawer, buffer, runtime, time, drawerOut);
     });
 }
 

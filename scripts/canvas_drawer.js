@@ -2,9 +2,9 @@
     TODO: redraw on user request
 */
 
-define(['./animate', './scene' , './tree', './rainbow'], function (animate, scene, tree, rainbow) {
+define(['./animate','./metronome', './scene' , './tree', './rainbow'], function (animate, metronome, scene, tree, rainbow) {
     var available = [
-        {lib:animate, desc:'simple animation', date:'20141215'},
+        {lib:metronome, desc:'simple animation', date:'20141215'},
         {lib:scene, desc:'simple scene', date:'20141214'},
         {lib:tree, desc:'basic tree', date:'20141116'}, 
         {lib:rainbow, desc:'squiggly rainbow', date:'20141115'},
@@ -30,8 +30,7 @@ define(['./animate', './scene' , './tree', './rainbow'], function (animate, scen
           }
           dd.onchange = function(){require(['./canvas_drawer'], function(canvas_drawer) {
             var cx = document.querySelector("canvas").getContext("2d");
-            // TODO: ugly global
-            STOP_ANIMATE = true; // animate library will reset this if it's time to animate
+            animate.stopAnimation(cx); // animate library will reset this if it's time to animate
             canvas_drawer.render(cx);
           });};
           document.body.appendChild(dd);
